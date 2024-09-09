@@ -943,6 +943,20 @@ func (config SetGameScoreConfig) method() string {
 	return "setGameScore"
 }
 
+type AnswerCallbackQueryConfig struct {
+	CallbackQueryID string
+}
+
+func (config AnswerCallbackQueryConfig) method() string {
+	return "answerCallbackQuery"
+}
+
+func (config AnswerCallbackQueryConfig) params() (Params, error) {
+	params := make(Params)
+	params.AddFirstValid("callback_query_id", config.CallbackQueryID)
+	return params, nil
+}
+
 // GetGameHighScoresConfig allows you to fetch the high scores for a game.
 type GetGameHighScoresConfig struct {
 	UserID          int64

@@ -362,6 +362,12 @@ func (bot *BotAPI) SendMediaGroup(config MediaGroupConfig) ([]Message, error) {
 	return messages, err
 }
 
+// AnswerCallbackQuery send answers to callback queries sent from inline keyboards.
+func (bot *BotAPI) AnswerCallbackQuery(update Update) (*APIResponse, error) {
+	Config := NewAnswerCallbackQuery(update.CallbackQuery.ID)
+	return bot.Request(Config)
+}
+
 // GetUserProfilePhotos gets a user's profile photos.
 //
 // It requires UserID.

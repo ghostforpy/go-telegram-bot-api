@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+func NewAnswerCallbackQuery(CallbackQueryID string) AnswerCallbackQueryConfig {
+	return AnswerCallbackQueryConfig{
+		CallbackQueryID: CallbackQueryID,
+	}
+}
 // NewMessage creates a new Message.
 //
 // chatID is where to send it, text is the message text.
