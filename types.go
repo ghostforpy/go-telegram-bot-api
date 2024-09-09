@@ -117,6 +117,7 @@ type Update struct {
 	// MessageReaction represents a change of a reaction on a message performed by a user.
 	// optional
 	MessageReaction *MessageReaction `json:"message_reaction,omitempty"`
+	Bot             *BotAPI          `json:"-"`
 }
 
 // SentFrom returns the user who sent an update. Can be nil, if Telegram did not provide information
