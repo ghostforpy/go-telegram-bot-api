@@ -114,6 +114,9 @@ type Update struct {
 	//
 	// optional
 	ChatJoinRequest *ChatJoinRequest `json:"chat_join_request,omitempty"`
+	// MessageReaction represents a change of a reaction on a message performed by a user.
+	// optional
+	MessageReaction *MessageReaction `json:"message_reaction,omitempty"`
 }
 
 // SentFrom returns the user who sent an update. Can be nil, if Telegram did not provide information
@@ -3327,4 +3330,54 @@ type PreCheckoutQuery struct {
 	//
 	// optional
 	OrderInfo *OrderInfo `json:"order_info,omitempty"`
+}
+
+// ReactionType describes the type of a reaction.
+type ReactionType struct {
+	// Type of the reaction.
+	// Can be:
+	//  “emoji”,
+	//  “custom_emoji”,
+	//  “paid”,
+	//  “bot_command” (/start@jobs_bot),
+	//  “url” (https://telegram.org),
+	Type string `json:"type"`
+	// Emoji of the reaction.
+	// Reaction emoji.
+	//Currently, it can be one of
+	//"👍", "👎", "❤", "🔥", "🥰",
+	//"👏", "😁", "🤔", "🤯", "😱",
+	//"🤬", "😢", "🎉", "🤩", "🤮",
+	//"💩", "🙏", "👌", "🕊", "🤡",
+	//"🥱", "🥴", "😍", "🐳", "❤‍🔥",
+	//"🌚", "🌭", "💯", "🤣", "⚡",
+	//"🍌", "🏆", "💔", "🤨", "😐",
+	//"🍓", "🍾", "💋", "🖕", "😈",
+	//"😴", "😭", "🤓", "👻", "👨‍💻",
+	//"👀", "🎃", "🙈", "😇", "😨",
+	//"🤝", "✍", "🤗", "🫡", "🎅",
+	//"🎄", "☃", "💅", "🤪", "🗿",
+	//"🆒", "💘", "🙉", "🦄", "😘",
+	//"💊", "🙊", "😎", "👾", "🤷‍♂",
+	//"🤷", "🤷‍♀", "😡"
+	Emoji         string `json:"emoji"`
+	CustomEmojiID string `json:"custom_emoji_id"`
+}
+
+// MessageReaction represents a change of a reaction on a message performed by a user.
+type MessageReaction struct {
+	// Chat containing the message the user reacted to.
+	Chat Chat `json:"chat"`
+	// MessageID is a unique message identifier inside this chat
+	MessageID int `json:"message_id"`
+	// User that changed the reaction, if the user isn't anonymous.
+	From User `json:"user,omitempty"`
+	// Date of the change in Unix time.
+	Date int `json:"date"`
+	// Chat on behalf of which the reaction was changed, if the user is anonymous.
+	ActorChat Chat `json:"actor_chat,omitempty"`
+	// OldReaction is previous list of reaction types that were set by the user
+	OldReaction []ReactionType `json:"old_reaction,omitempty"`
+	// OldReaction is previous list of reaction types that were set by the user
+	NewReaction []ReactionType `json:"new_reaction,omitempty"`
 }
