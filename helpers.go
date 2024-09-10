@@ -16,6 +16,7 @@ func NewAnswerCallbackQuery(CallbackQueryID string) AnswerCallbackQueryConfig {
 		CallbackQueryID: CallbackQueryID,
 	}
 }
+
 // NewMessage creates a new Message.
 //
 // chatID is where to send it, text is the message text.
@@ -989,4 +990,50 @@ func ValidateWebAppData(token, telegramInitData string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (u *Update) EffectiveChat() *Chat {
+	if u.Message != nil {
+		return u.Message.Chat
+	} else if u.EditedMessage != nil {
+		return u.EditedMessage.Chat
+	} else if u.CallbackQuery != nil {
+		return u.CallbackQuery.Message.Chat
+	} else if u.ChannelPost != nil {
+		return u.ChannelPost.Chat
+	} else if u.EditedChannelPost != nil {
+		return u.EditedChannelPost.Chat
+	} else if u.MyChatMember != nil {
+		return u.MyChatMember.Chat
+	} else if u.ChatJoinRequest != nil {
+		return u.ChatJoinRequest.Chat
+	} else if u.MessageReaction != nil {
+		return u.MessageReaction.Chat
+	} else if u.InlineQuery != nil {
+		return nil
+	}
+	return nil
+}
+
+func (u *Update) EffectiveUser() *User {
+	if u.Message != nil {
+		return u.Message.From
+	} else if u.EditedMessage != nil {
+		return u.EditedMessage.From
+	} else if u.CallbackQuery != nil {
+		return u.CallbackQuery.From
+	} else if u.ChannelPost != nil {
+		return u.ChannelPost.From
+	} else if u.EditedChannelPost != nil {
+		return u.EditedChannelPost.From
+	} else if u.MyChatMember != nil {
+		return u.MyChatMember.From
+	} else if u.ChatJoinRequest != nil {
+		return u.ChatJoinRequest.From
+	} else if u.MessageReaction != nil {
+		return u.MessageReaction.From
+	} else if u.InlineQuery != nil {
+		return u.InlineQuery.From
+	}
+	return nil
 }
