@@ -1732,9 +1732,9 @@ func (chat ChatMember) WasKicked() bool { return chat.Status == "kicked" }
 // ChatMemberUpdated represents changes in the status of a chat member.
 type ChatMemberUpdated struct {
 	// Chat the user belongs to.
-	Chat Chat `json:"chat"`
+	Chat *Chat `json:"chat"`
 	// From is the performer of the action, which resulted in the change.
-	From User `json:"from"`
+	From *User `json:"from"`
 	// Date the change was done in Unix time.
 	Date int `json:"date"`
 	// Previous information about the chat member.
@@ -1751,9 +1751,9 @@ type ChatMemberUpdated struct {
 // ChatJoinRequest represents a join request sent to a chat.
 type ChatJoinRequest struct {
 	// Chat to which the request was sent.
-	Chat Chat `json:"chat"`
+	Chat *Chat `json:"chat"`
 	// User that sent the join request.
-	From User `json:"from"`
+	From *User `json:"from"`
 	// Date the request was sent in Unix time.
 	Date int `json:"date"`
 	// Bio of the user.
@@ -3368,15 +3368,15 @@ type ReactionType struct {
 // MessageReaction represents a change of a reaction on a message performed by a user.
 type MessageReaction struct {
 	// Chat containing the message the user reacted to.
-	Chat Chat `json:"chat"`
+	Chat *Chat `json:"chat"`
 	// MessageID is a unique message identifier inside this chat
 	MessageID int `json:"message_id"`
 	// User that changed the reaction, if the user isn't anonymous.
-	From User `json:"user,omitempty"`
+	From *User `json:"user,omitempty"`
 	// Date of the change in Unix time.
 	Date int `json:"date"`
 	// Chat on behalf of which the reaction was changed, if the user is anonymous.
-	ActorChat Chat `json:"actor_chat,omitempty"`
+	ActorChat *Chat `json:"actor_chat,omitempty"`
 	// OldReaction is previous list of reaction types that were set by the user
 	OldReaction []ReactionType `json:"old_reaction,omitempty"`
 	// OldReaction is previous list of reaction types that were set by the user
