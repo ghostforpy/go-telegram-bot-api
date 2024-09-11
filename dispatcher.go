@@ -96,12 +96,12 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 
 }
 
-func (dispatcher *Dispatcher) AddConvHandler(hanler ConvHandler) {
-	dispatcher.ConvHandlers = append(dispatcher.ConvHandlers, hanler)
+func (dispatcher *Dispatcher) AddConvHandler(handler ConvHandler) {
+	dispatcher.ConvHandlers = append(dispatcher.ConvHandlers, handler)
 }
 
-func (dispatcher *Dispatcher) AddCommonHandler(hanler CommonHandler) {
-	dispatcher.CommonHandlers = append(dispatcher.CommonHandlers, hanler)
+func (dispatcher *Dispatcher) AddCommonHandler(handler CommonHandler) {
+	dispatcher.CommonHandlers = append(dispatcher.CommonHandlers, handler)
 }
 
 func (dispatcher *Dispatcher) AddGlobalMiddlewares(middlewares ...Middleware) {
