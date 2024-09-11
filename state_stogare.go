@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+
 	"github.com/redis/go-redis/v9"
 )
 
@@ -61,5 +62,19 @@ func (redisStateStorage *RedisStateStorage) SetState(ctx context.Context, update
 		return true, nil
 	}
 	return false, fmt.Errorf("redis problem Set Key: %v", key)
+}
 
+type NilStateStorage struct {
+}
+
+func NewNilStateStorage(redisUrl string) (*NilStateStorage, error) {
+	return &NilStateStorage{}, nil
+}
+
+func (nilStateStorage *NilStateStorage) GetState(ctx context.Context, update Update) (state string, err error) {
+	return "", nil
+}
+
+func (nilStateStorage *NilStateStorage) SetState(ctx context.Context, update Update, state string) (result bool, err error) {
+	return true, nil
 }
