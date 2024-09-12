@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
+
+const StorageConvTimeout time.Duration = 600000000000 // 10 min
 
 type StateStorage interface {
 	GetState(ctx context.Context, update Update) (state string, err error)
@@ -57,7 +60,7 @@ func (redisStateStorage *RedisStateStorage) GetState(ctx context.Context, update
 
 func (redisStateStorage *RedisStateStorage) SetState(ctx context.Context, update Update, state string) (result bool, err error) {
 	key := BuildKey(update)
-	err = redisStateStorage.Rdb.Set(ctx, key, state, 0).Err()
+	err = redisStateStorage.Rdb.Set(ctx, key, state, StorageConvTimeout).Err()
 	if err == nil {
 		return true, nil
 	}
