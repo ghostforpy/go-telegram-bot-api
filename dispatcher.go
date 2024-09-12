@@ -22,13 +22,17 @@ func NewDispatcher(bot BotAPI) *Dispatcher {
 	return &Dispatcher{Bot: bot}
 }
 
-type contextKey string
-
-func (c contextKey) String() string {
-	return string(c)
+type TgbotapiContext struct {
+	Ctx          context.Context
+	UserState    string
+	StateStorage StateStorage
 }
 
-var ContextUserState = contextKey("user_state")
+func NewTgbotapiContext() *TgbotapiContext {
+	return &TgbotapiContext{
+		Ctx: context.TODO(),
+	}
+}
 
 func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 	var updateHandled bool
@@ -41,19 +45,19 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 			}
 		}
 	}()
-	bctx := context.Background()
-	state, err := dispatcher.StateStorage.GetState(bctx, update)
-	var ctx context.Context
-	if err != nil && state != "" {
-		ctx = context.WithValue(context.Background(), ContextUserState, state)
+	tctx := NewTgbotapiContext()
+	tctx.StateStorage = dispatcher.StateStorage
+	state, err := dispatcher.StateStorage.GetState(tctx.Ctx, update)
+	if err == nil && state != "" {
+		tctx.UserState = state
 	} else {
-		ctx = context.WithValue(context.Background(), ContextUserState, "main")
+		tctx.UserState = "main"
 	}
 
 	for _, convHandler := range dispatcher.ConvHandlers {
-		if ok, err := convHandler.CheckUpdate(update); err == nil && ok {
-			handlerFunc := applyMiddlewares(convHandler.HandleUpdate, dispatcher.GlobalMiddlewares...)
-			err := handlerFunc(ctx, update)
+		if handlerFunc, err := convHandler.HandleUpdate(*tctx, update); err == nil && handlerFunc != nil {
+			handlerFunc := applyMiddlewares(handlerFunc, dispatcher.GlobalMiddlewares...)
+			err := handlerFunc(*tctx, update)
 			if err == nil {
 				updateHandled = true
 			}
@@ -68,7 +72,7 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 	for _, commonHandler := range dispatcher.CommonHandlers {
 		if ok, err := commonHandler.CheckUpdate(update); err == nil && ok {
 			handlerFunc := applyMiddlewares(commonHandler.HandleUpdate, dispatcher.GlobalMiddlewares...)
-			err := handlerFunc(ctx, update)
+			err := handlerFunc(*tctx, update)
 			if err == nil {
 				updateHandled = true
 			}
@@ -76,14 +80,13 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 		if updateHandled {
 			break
 		}
-
 	}
 	if updateHandled {
 		return nil
 	}
 	if dispatcher.DefaultHandler != nil {
 		handlerFunc := applyMiddlewares(dispatcher.DefaultHandler.HandleUpdate, dispatcher.GlobalMiddlewares...)
-		err := handlerFunc(ctx, update)
+		err := handlerFunc(*tctx, update)
 		if err != nil {
 			return err
 		}

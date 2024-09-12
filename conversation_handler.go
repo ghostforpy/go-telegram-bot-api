@@ -1,7 +1,6 @@
 package tgbotapi
 
 import (
-	"context"
 	"fmt"
 	"regexp"
 	"strings"
@@ -45,12 +44,9 @@ func NewConvHandler(name string, entryPoints []CommonHandler, states map[string]
 	}
 }
 
-func (cvh *ConvHandler) HandleUpdate(ctx context.Context, update Update) (HandleUpdateFunc, error) {
-	state, ok := ctx.Value(ContextUserState).(string)
-	if !ok {
-		return nil, nil
-	}
-	if state == "main" || cvh.AllowReentry {
+func (cvh *ConvHandler) HandleUpdate(tctx TgbotapiContext, update Update) (HandleUpdateFunc, error) {
+	state := tctx.UserState
+	if state == "" || state == "main" || cvh.AllowReentry {
 		for _, handler := range cvh.EntryPoints {
 			if ok, err := handler.CheckUpdate(update); err == nil && ok {
 				return handler.HandleUpdate, nil

@@ -1,7 +1,6 @@
 package tgbotapi
 
 import (
-	"context"
 	"fmt"
 	"time"
 )
@@ -21,25 +20,25 @@ func applyMiddlewares(h HandleUpdateFunc, m ...Middleware) HandleUpdateFunc {
 
 // AutoAnswerCallbackQueryMiddleware answer every callback query
 func AutoAnswerCallbackQueryMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
-	return func(ctx context.Context, update Update) error {
+	return func(tctx TgbotapiContext, update Update) error {
 		if update.CallbackQuery != nil {
 			update.Bot.AnswerCallbackQuery(update)
 		}
-		return next(ctx, update)
+		return next(tctx, update)
 	}
 }
 
 // ExampleMiddleware proceed update
 func ExampleMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
-	return func(ctx context.Context, update Update) error {
+	return func(tctx TgbotapiContext, update Update) error {
 		// do something
-		return next(ctx, update)
+		return next(tctx, update)
 	}
 }
 
 // ExampleStopMiddleware stop proceed update
 func ExampleStopMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
-	return func(ctx context.Context, update Update) error {
+	return func(tctx TgbotapiContext, update Update) error {
 		// do something
 		return nil
 	}
@@ -48,7 +47,7 @@ func ExampleStopMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
 // ExampleNotHanledMiddleware stop proceed update in handlers block
 // ConvHandlers -> CommonHandlers -> DefaultHandler
 func ExampleNotHanledMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
-	return func(ctx context.Context, update Update) error {
+	return func(tctx TgbotapiContext, update Update) error {
 		// do something
 		return fmt.Errorf("some error")
 	}
@@ -56,9 +55,9 @@ func ExampleNotHanledMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
 
 // ExampleTimerMiddleware calc time
 func ExampleTimerMiddleware(next HandleUpdateFunc) HandleUpdateFunc {
-	return func(ctx context.Context, update Update) error {
+	return func(tctx TgbotapiContext, update Update) error {
 		t := time.Now().Unix()
-		r := next(ctx, update)
+		r := next(tctx, update)
 		fmt.Printf("\nTime for handle: %v\n", time.Now().Unix()-t)
 		return r
 	}
