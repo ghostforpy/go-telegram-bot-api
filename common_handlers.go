@@ -1,7 +1,6 @@
 package tgbotapi
 
 import (
-	"context"
 	"fmt"
 	"regexp"
 )
@@ -20,11 +19,18 @@ type CommonHandler interface {
 type DefalutHander struct {
 	CommonHandler
 	Callback    func(tctx TgbotapiContext, update Update) error
-	Filters     []func(Update) (bool, error)
+	Filters     []func(Update) bool
 	Middlewares []Middleware
 }
 
 func (dh *DefalutHander) CheckUpdate(update Update) (bool, error) {
+	if len(dh.Filters) > 0 {
+		for _, filterFunc := range dh.Filters {
+			if ok := filterFunc(update); !ok {
+				return false, nil
+			}
+		}
+	}
 	return true, nil
 }
 func (dh *DefalutHander) HandleUpdate(tctx TgbotapiContext, update Update) error {
@@ -35,7 +41,7 @@ func (dh *DefalutHander) HandleUpdate(tctx TgbotapiContext, update Update) error
 type MessageHander struct {
 	Handler
 	Callback    func(tctx TgbotapiContext, update Update) error
-	Filters     []func(Update) (bool, error)
+	Filters     []func(Update) bool
 	Middlewares []Middleware
 }
 
@@ -45,7 +51,7 @@ func (mh *MessageHander) CheckUpdate(update Update) (bool, error) {
 	}
 	if len(mh.Filters) > 0 {
 		for _, filterFunc := range mh.Filters {
-			if ok, err := filterFunc(update); err == nil && !ok {
+			if ok := filterFunc(update); !ok {
 				return false, nil
 			}
 		}
@@ -62,7 +68,7 @@ type CommandHander struct {
 	DefalutHander
 	Command     string
 	Callback    func(tctx TgbotapiContext, update Update) error
-	Filters     []func(Update) (bool, error)
+	Filters     []func(Update) bool
 	Middlewares []Middleware
 }
 
@@ -75,6 +81,13 @@ func (cmh *CommandHander) CheckUpdate(update Update) (bool, error) {
 	}
 	if update.Message.Command() != cmh.Command {
 		return false, nil
+	}
+	if len(cmh.Filters) > 0 {
+		for _, filterFunc := range cmh.Filters {
+			if ok := filterFunc(update); !ok {
+				return false, nil
+			}
+		}
 	}
 	return true, nil
 

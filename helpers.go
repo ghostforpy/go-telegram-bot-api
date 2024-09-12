@@ -994,13 +994,13 @@ func ValidateWebAppData(token, telegramInitData string) (bool, error) {
 
 func (u *Update) EffectiveChat() *Chat {
 	if u.Message != nil {
-		return u.Message.Chat
+		return u.Message.SenderChat
 	} else if u.EditedMessage != nil {
-		return u.EditedMessage.Chat
+		return u.EditedMessage.SenderChat
 	} else if u.CallbackQuery != nil {
-		return u.CallbackQuery.Message.Chat
+		return u.CallbackQuery.Message.SenderChat
 	} else if u.ChannelPost != nil {
-		return u.ChannelPost.Chat
+		return u.ChannelPost.SenderChat
 	} else if u.EditedChannelPost != nil {
 		return u.EditedChannelPost.Chat
 	} else if u.MyChatMember != nil {
