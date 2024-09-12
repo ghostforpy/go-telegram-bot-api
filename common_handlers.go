@@ -12,11 +12,6 @@ type Handler interface {
 	CheckUpdate(update Update) (bool, error)
 	HandleUpdate(ctx context.Context, update Update) error
 }
-type ConvHandler interface {
-	Handler
-	GetUserState(update Update) (string, error)
-	SetUserState(update Update, state string) error
-}
 
 type CommonHandler interface {
 	Handler
