@@ -1149,10 +1149,11 @@ func (config FileConfig) params() (Params, error) {
 
 // UpdateConfig contains information about a GetUpdates request.
 type UpdateConfig struct {
-	Offset         int
-	Limit          int
-	Timeout        int
-	AllowedUpdates []string
+	Offset               int
+	Limit                int
+	Timeout              int
+	AllowedUpdates       []string
+	DispatcherWorkersNum int
 }
 
 func (UpdateConfig) method() string {

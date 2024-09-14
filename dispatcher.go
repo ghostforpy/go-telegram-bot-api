@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 )
 
 type Dispatcher struct {
@@ -98,14 +99,29 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 	return fmt.Errorf("%v not handled", update)
 
 }
-func (dispatcher *Dispatcher) StartPooling(uCfg UpdateConfig) {
+
+func (dispatcher *Dispatcher) dispatch(update Update, wg *sync.WaitGroup, quotaChan chan struct{}) {
+	defer wg.Done()
+	quotaChan <- struct{}{}
+	dispatcher.HandleUpdate(update)
+	<-quotaChan
+}
+
+func (dispatcher *Dispatcher) StartPooling(wg *sync.WaitGroup, uCfg UpdateConfig) {
 	// Start polling Telegram for updates.
 	updates := dispatcher.Bot.GetUpdatesChan(uCfg)
-
+	workersNum := uCfg.DispatcherWorkersNum
+	if workersNum == 0 {
+		workersNum = 1
+	} else if workersNum > 30 {
+		workersNum = 30
+	}
+	quotaChan := make(chan struct{}, workersNum)
 	// Let's go through each update that we're getting from Telegram.
 	for update := range updates {
+		wg.Add(1)
 		update.Bot = &dispatcher.Bot
-		dispatcher.HandleUpdate(update)
+		go dispatcher.dispatch(update, wg, quotaChan)
 	}
 }
 
