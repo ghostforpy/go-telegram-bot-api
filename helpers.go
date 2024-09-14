@@ -731,6 +731,17 @@ func NewInlineKeyboardButtonSwitch(text, sw string) InlineKeyboardButton {
 	}
 }
 
+// NewInlineKeyboardButtonSwitchCurrentChat creates an inline keyboard button with
+// text which will insert the bot's username and the specified inline query in the
+// current chat's input field. May be empty, in which case only the bot's username
+// will be inserted.
+func NewInlineKeyboardButtonSwitchCurrentChat(text, sw string) InlineKeyboardButton {
+	return InlineKeyboardButton{
+		Text:                         text,
+		SwitchInlineQueryCurrentChat: &sw,
+	}
+}
+
 // NewInlineKeyboardRow creates an inline keyboard row with buttons.
 func NewInlineKeyboardRow(buttons ...InlineKeyboardButton) []InlineKeyboardButton {
 	var row []InlineKeyboardButton
