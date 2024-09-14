@@ -17,6 +17,7 @@ type Dispatcher struct {
 	ConvHandlersMiddlewares   []Middleware
 	CommonHandlersMiddlewares []Middleware
 	DefaultHandlerMiddlewares []Middleware
+	UserDataStorage           UserDataStorage
 }
 
 func NewDispatcher(bot BotAPI) *Dispatcher {
@@ -27,6 +28,7 @@ type TgbotapiContext struct {
 	Ctx          context.Context
 	UserState    string
 	StateStorage StateStorage
+	UserData     UserData
 }
 
 func NewTgbotapiContext() *TgbotapiContext {
@@ -48,6 +50,13 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 	}()
 	tctx := NewTgbotapiContext()
 	tctx.StateStorage = dispatcher.StateStorage
+	userId := update.EffectiveUser().ID
+	tctx.UserData, _ = dispatcher.UserDataStorage.GetUserData(tctx.Ctx, userId)
+	if tctx.UserData == nil {
+		newUserData, _ := dispatcher.UserDataStorage.NewUserData(tctx.Ctx, userId)
+		dispatcher.UserDataStorage.SetUserData(tctx.Ctx, userId, newUserData)
+		tctx.UserData = newUserData
+	}
 	state, err := dispatcher.StateStorage.GetState(tctx.Ctx, update)
 	if err == nil && state != "" {
 		tctx.UserState = state
