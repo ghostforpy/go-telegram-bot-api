@@ -98,6 +98,16 @@ func (dispatcher *Dispatcher) HandleUpdate(update Update) error {
 	return fmt.Errorf("%v not handled", update)
 
 }
+func (dispatcher *Dispatcher) StartPooling(uCfg UpdateConfig) {
+	// Start polling Telegram for updates.
+	updates := dispatcher.Bot.GetUpdatesChan(uCfg)
+
+	// Let's go through each update that we're getting from Telegram.
+	for update := range updates {
+		update.Bot = &dispatcher.Bot
+		dispatcher.HandleUpdate(update)
+	}
+}
 
 func (dispatcher *Dispatcher) AddConvHandler(handler ConvHandler) {
 	dispatcher.ConvHandlers = append(dispatcher.ConvHandlers, handler)
