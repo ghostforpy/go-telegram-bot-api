@@ -52,7 +52,8 @@ func (cvh *ConvHandler) HandleUpdate(tctx TgbotapiContext, update Update) (Handl
 				return handler.HandleUpdate, nil
 			}
 		}
-	} else if cvh.stateCheckerRegexp.Match([]byte(state)) {
+	}
+	if cvh.stateCheckerRegexp.Match([]byte(state)) {
 		// states
 		for _, handler := range cvh.States[state] {
 			if ok, err := handler.CheckUpdate(update); err == nil && ok {
@@ -65,6 +66,7 @@ func (cvh *ConvHandler) HandleUpdate(tctx TgbotapiContext, update Update) (Handl
 				return handler.HandleUpdate, nil
 			}
 		}
+		return func(tctx TgbotapiContext, update Update) error { return nil }, nil
 	}
 	return nil, nil
 }
