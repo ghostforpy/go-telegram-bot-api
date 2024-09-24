@@ -21,7 +21,9 @@ type Dispatcher struct {
 }
 
 func NewDispatcher(bot BotAPI) *Dispatcher {
-	return &Dispatcher{Bot: bot}
+	stateStorage, _ := NewNilStateStorage()
+	userDataStorage := NewInMemoryUserDataStorage()
+	return &Dispatcher{Bot: bot, StateStorage: stateStorage, UserDataStorage: userDataStorage}
 }
 
 type TgbotapiContext struct {
