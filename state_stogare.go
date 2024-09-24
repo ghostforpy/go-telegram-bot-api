@@ -14,6 +14,7 @@ const StorageConvTimeout time.Duration = 600000000000 // 10 min
 type StateStorage interface {
 	GetState(ctx context.Context, update Update) (state string, err error)
 	SetState(ctx context.Context, update Update, state string) (result bool, err error)
+	ClearState(ctx context.Context, update Update) (err error)
 }
 
 type RedisStateStorage struct {
@@ -66,6 +67,10 @@ func (redisStateStorage *RedisStateStorage) SetState(ctx context.Context, update
 	}
 	return false, fmt.Errorf("redis problem Set Key: %v", key)
 }
+func (redisStateStorage *RedisStateStorage) ClearState(ctx context.Context, update Update) (err error) {
+	_, err = redisStateStorage.SetState(ctx, update, "")
+	return err
+}
 
 type NilStateStorage struct {
 }
@@ -80,4 +85,7 @@ func (nilStateStorage *NilStateStorage) GetState(ctx context.Context, update Upd
 
 func (nilStateStorage *NilStateStorage) SetState(ctx context.Context, update Update, state string) (result bool, err error) {
 	return true, nil
+}
+func (nilStateStorage *NilStateStorage) ClearState(ctx context.Context, update Update) (err error) {
+	return nil
 }
