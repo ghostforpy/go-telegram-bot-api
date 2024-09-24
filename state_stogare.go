@@ -70,7 +70,7 @@ func (redisStateStorage *RedisStateStorage) SetState(ctx context.Context, update
 type NilStateStorage struct {
 }
 
-func NewNilStateStorage(redisUrl string) (*NilStateStorage, error) {
+func NewNilStateStorage() (*NilStateStorage, error) {
 	return &NilStateStorage{}, nil
 }
 
