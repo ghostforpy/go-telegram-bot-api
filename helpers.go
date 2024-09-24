@@ -1005,13 +1005,13 @@ func ValidateWebAppData(token, telegramInitData string) (bool, error) {
 
 func (u *Update) EffectiveChat() *Chat {
 	if u.Message != nil {
-		return u.Message.SenderChat
+		return u.Message.Chat
 	} else if u.EditedMessage != nil {
-		return u.EditedMessage.SenderChat
+		return u.EditedMessage.Chat
 	} else if u.CallbackQuery != nil {
-		return u.CallbackQuery.Message.SenderChat
+		return u.CallbackQuery.Message.Chat
 	} else if u.ChannelPost != nil {
-		return u.ChannelPost.SenderChat
+		return u.ChannelPost.Chat
 	} else if u.EditedChannelPost != nil {
 		return u.EditedChannelPost.Chat
 	} else if u.MyChatMember != nil {
