@@ -123,9 +123,57 @@ func (cbh *CallbackHander) CheckUpdate(update Update) (bool, error) {
 		return false, nil
 	}
 	return true, nil
-
 }
+
 func (ch *CallbackHander) HandleUpdate(tctx TgbotapiContext, update Update) error {
 	callbackFunc := applyMiddlewares(ch.Callback, ch.Middlewares...)
 	return callbackFunc(tctx, update)
+}
+
+type InlineQueryHander struct {
+	CommonHandler
+	Pattern *regexp.Regexp
+	// Type of the chat, from which the inline query was sent. Can be either
+	// “sender” for a private chat with the inline query sender, “private”,
+	// “group”, “supergroup”, or “channel”. The chat type should be always known
+	// for requests sent from official clients and most third-party clients,
+	// unless the request was sent from a secret chat
+	//
+	// optional
+	ChatTypes   map[string]struct{}
+	Callback    func(tctx TgbotapiContext, update Update) error
+	Middlewares []Middleware
+}
+
+func NewInlineQueryHander(pattern, handlerHame string, Callback func(tctx TgbotapiContext, update Update) error) (*InlineQueryHander, error) {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		panic(fmt.Sprintf("%v not compiled for InlineQueryHander %v", pattern, handlerHame))
+	}
+	chatTypes := make(map[string]struct{})
+	chatTypes["private"] = struct{}{}
+	return &InlineQueryHander{Pattern: re, Callback: Callback, ChatTypes: chatTypes}, nil
+}
+
+func (iqh *InlineQueryHander) CheckUpdate(update Update) (bool, error) {
+	if update.InlineQuery == nil {
+		return false, nil
+	}
+	if _, ok := iqh.ChatTypes[update.InlineQuery.ChatType]; len(iqh.ChatTypes) > 0 && !ok {
+		return false, nil
+	}
+	matched := iqh.Pattern.Match([]byte(update.CallbackData()))
+	if !matched {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (iqh *InlineQueryHander) HandleUpdate(tctx TgbotapiContext, update Update) error {
+	callbackFunc := applyMiddlewares(iqh.Callback, iqh.Middlewares...)
+	return callbackFunc(tctx, update)
+}
+
+func (iqh *InlineQueryHander) Print() {
+	fmt.Printf("InlineQueryHander %v", iqh.Pattern)
 }
