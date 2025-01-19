@@ -33,21 +33,23 @@ func (redisStateStorage *RedisStateStorage) Ping(ctx context.Context) error {
 }
 
 func BuildKey(update Update) (key string) {
-	if update.InlineQuery != nil {
-		key += update.InlineQuery.ID
-	} else if update.CallbackQuery != nil {
-		key += strconv.Itoa(update.CallbackQuery.Message.MessageID)
-	}
+	// if update.InlineQuery != nil {
+	// 	key += update.InlineQuery.ID
+	// } else if update.CallbackQuery != nil {
+	// 	key += strconv.Itoa(update.CallbackQuery.Message.MessageID)
+	// }
 	if update.EffectiveUser() != nil {
 		key += strconv.FormatInt(update.EffectiveUser().ID, 10)
 	}
-	if update.PreCheckoutQuery != nil {
-		key += strconv.FormatInt(update.PreCheckoutQuery.From.ID, 10)
-	} else if update.EffectiveChat() != nil {
+	// if update.PreCheckoutQuery != nil {
+	// 	key += strconv.FormatInt(update.PreCheckoutQuery.From.ID, 10)
+	// }
+	if update.EffectiveChat() != nil {
 		key += strconv.FormatInt(update.EffectiveChat().ID, 10)
 	}
 	return key
 }
+
 func (redisStateStorage *RedisStateStorage) GetState(ctx context.Context, update Update) (state string, err error) {
 	key := BuildKey(update)
 	state, err = redisStateStorage.Rdb.Get(ctx, key).Result()
