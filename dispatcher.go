@@ -21,7 +21,7 @@ type Dispatcher struct {
 }
 
 func NewDispatcher(bot BotAPI) *Dispatcher {
-	stateStorage, _ := NewNilStateStorage()
+	stateStorage, _ := NewInMemoryStateStorage()
 	userDataStorage := NewInMemoryUserDataStorage()
 	return &Dispatcher{Bot: bot, StateStorage: stateStorage, UserDataStorage: userDataStorage}
 }
