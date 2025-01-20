@@ -151,7 +151,7 @@ func NewInlineQueryHander(pattern, handlerHame string, Callback func(tctx Tgbota
 		panic(fmt.Sprintf("%v not compiled for InlineQueryHander %v", pattern, handlerHame))
 	}
 	chatTypes := make(map[string]struct{})
-	chatTypes["private"] = struct{}{}
+	chatTypes["sender"] = struct{}{}
 	return &InlineQueryHander{Pattern: re, Callback: Callback, ChatTypes: chatTypes}, nil
 }
 
@@ -162,7 +162,7 @@ func (iqh *InlineQueryHander) CheckUpdate(update Update) (bool, error) {
 	if _, ok := iqh.ChatTypes[update.InlineQuery.ChatType]; len(iqh.ChatTypes) > 0 && !ok {
 		return false, nil
 	}
-	matched := iqh.Pattern.Match([]byte(update.CallbackData()))
+	matched := iqh.Pattern.Match([]byte(update.InlineQuery.Query))
 	if !matched {
 		return false, nil
 	}
