@@ -438,6 +438,13 @@ func NewInlineQueryResultPhoto(id, url string) InlineQueryResultPhoto {
 	}
 }
 
+// NewInlineQueryResultsButton creates a new inline query button.
+func NewInlineQueryResultsButton(text, url string) InlineQueryResultsButton {
+	return InlineQueryResultsButton{
+		Text: text,
+	}
+}
+
 // NewInlineQueryResultPhotoWithThumb creates a new inline query photo.
 func NewInlineQueryResultPhotoWithThumb(id, url, thumb string) InlineQueryResultPhoto {
 	return InlineQueryResultPhoto{
