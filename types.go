@@ -3401,7 +3401,8 @@ type MessageReaction struct {
 	NewReaction []ReactionType `json:"new_reaction,omitempty"`
 }
 
-var DefaultUpdateTypes = []string{"message",
+var DefaultUpdateTypes = []string{
+	"message",
 	"edited_message",
 	"channel_post",
 	"edited_channel_post",
