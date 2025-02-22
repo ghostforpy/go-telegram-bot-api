@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -99,13 +100,11 @@ func (bot *BotAPI) MakeRequest(endpoint string, params Params) (*APIResponse, er
 	method := fmt.Sprintf(bot.apiEndpoint, bot.Token, endpoint)
 
 	values := buildParams(params)
-
 	req, err := http.NewRequest("POST", method, strings.NewReader(values.Encode()))
 	if err != nil {
 		return &APIResponse{}, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
 	resp, err := bot.Client.Do(req)
 	if err != nil {
 		return nil, err
@@ -397,6 +396,43 @@ func (bot *BotAPI) GetFile(config FileConfig) (File, error) {
 	err = json.Unmarshal(resp.Result, &file)
 
 	return file, err
+}
+
+// DownloadFileToMemory download a file from Telegram to memory.
+func (bot *BotAPI) DownloadFileToMemory(fileID, outputPath string) ([]byte, error) {
+	url, err := bot.GetFileDirectURL(fileID)
+	if err != nil {
+		return []byte{}, err
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	return io.ReadAll(resp.Body)
+}
+
+// DownloadFileToDrive download a file from Telegram to drive.
+func (bot *BotAPI) DownloadFileToDrive(fileID, outputPath string) error {
+	url, err := bot.GetFileDirectURL(fileID)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	out, err := os.Create(outputPath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetUpdates fetches updates.
