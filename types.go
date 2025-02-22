@@ -638,7 +638,6 @@ type Message struct {
 	//
 	// optional
 	ReplyMarkup *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
-	File
 }
 
 // Time converts the message timestamp into a Time.
@@ -1231,11 +1230,11 @@ type UserProfilePhotos struct {
 type File struct {
 	// FileID identifier for this file, which can be used to download or reuse
 	// the file
-	FileID string `json:"file_id,omitempty"`
+	FileID string `json:"file_id"`
 	// FileUniqueID is the unique identifier for this file, which is supposed to
 	// be the same over time and for different bots. Can't be used to download
 	// or reuse the file.
-	FileUniqueID string `json:"file_unique_id,omitempty"`
+	FileUniqueID string `json:"file_unique_id"`
 	// FileSize file size, if known
 	//
 	// optional
